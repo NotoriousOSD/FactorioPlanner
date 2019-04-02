@@ -1,3 +1,7 @@
+function getProducedByFactoryPerSecond() {
+  return 1 / this.productionCycleTime * this.numberProducedPerCycle;
+}
+
 const itemDictionary = {
   ironOre: {
     name: 'ironOre',
@@ -19,6 +23,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: 3.2,
     numberProducedPerCycle: 1,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'ironOre',
@@ -32,6 +37,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: 3.2,
     numberProducedPerCycle: 1,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'copperOre',
@@ -45,6 +51,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: .5,
     numberProducedPerCycle: 2,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'copperPlate',
@@ -58,6 +65,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: 1,
     numberProducedPerCycle: 2,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'coal',
@@ -75,6 +83,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: .5,
     numberProducedPerCycle: 1,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'copperCable',
@@ -92,6 +101,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: 6,
     numberProducedPerCycle: 1,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'copperCable',
@@ -111,8 +121,9 @@ const itemDictionary = {
   processingUnit: {
     name: 'processingUnit',
     isPrimitive: false,
-    productionCycleTime: 6,
+    productionCycleTime: 10,
     numberProducedPerCycle: 1,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'advancedCircuit',
@@ -134,6 +145,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: 1,
     numberProducedPerCycle: 50,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'ironPlate',
@@ -155,6 +167,7 @@ const itemDictionary = {
     isPrimitive: false,
     productionCycleTime: 1,
     numberProducedPerCycle: 2,
+    baseProducedByFactoryPerSecond: getProducedByFactoryPerSecond,
     ingredients: [
       {
         name: 'petroleum',
@@ -212,6 +225,17 @@ function getAllIngredientsPerSingleItem(finalProductName) {
   return ingredientList;
 }
 
+function getBaseProductionRateIngredientsPerSecond(finalProductName) {
+  let finalProduct = itemDictionary[finalProductName];
+  let ingredientsPerSingleItem = getAllIngredientsPerSingleItem(finalProductName);
+  for (let ingredient in ingredientsPerSingleItem) {
+    if (ingredientsPerSingleItem.hasOwnProperty(ingredient)) {
+      ingredientsPerSingleItem[ingredient] /= finalProduct.productionCycleTime;
+    }
+  }
+  return ingredientsPerSingleItem;
+}
+
 function getIngredientsPerSecondForOneParentItemPerSecond(finalProductName) {
   let finalProduct = itemDictionary[finalProductName];
   let ingredientsPerSingleItem = getAllIngredientsPerSingleItem(finalProductName);
@@ -224,15 +248,40 @@ function getIngredientsPerSecondForOneParentItemPerSecond(finalProductName) {
 }
 
 function getBaseFactoryRatios(finalProductName) {
-  let ingredientsPerSecondList = getIngredientsPerSecondForOneParentItemPerSecond(finalProductName);
+  let ingredientsPerSecondList = getBaseProductionRateIngredientsPerSecond(finalProductName);
   for (let ingredient in ingredientsPerSecondList) {
     if (ingredientsPerSecondList.hasOwnProperty(ingredient)) {
-      ingredientsPerSecondList[ingredient] *= (itemDictionary[ingredient].productionCycleTime / itemDictionary[ingredient].numberProducedPerCycle);
+      if(!itemDictionary[ingredient].isPrimitive) {
+        ingredientsPerSecondList[ingredient] /= itemDictionary[ingredient].baseProducedByFactoryPerSecond();
+      } else {
+        ingredientsPerSecondList[ingredient] = "Primitive";
+      }
+
     }
   }
   return ingredientsPerSecondList;
 }
 
+function addIngredient(name, factoryRatio) {
+  let newRow = document.getElementById('ingredient-table-body').insertRow(0);
+  let nameCell = newRow.insertCell(0);
+  nameCell.append(document.createTextNode(name));
+  let factoryRatioCell = newRow.insertCell(1);
+  factoryRatioCell.append(document.createTextNode(factoryRatio));
+
+}
+
+function itemSearched() {
+  document.getElementById('ingredient-table-body').innerHTML = "";
+  let inputText = document.getElementById('final-product').value;
+  let factoryRatios = getBaseFactoryRatios(inputText);
+  for (let ingredient in factoryRatios) {
+    if (factoryRatios.hasOwnProperty(ingredient)) {
+      addIngredient(ingredient, factoryRatios[ingredient]);
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  console.log(getBaseFactoryRatios('advancedCircuit'));
 });
+document.getElementById('go-button').addEventListener('click', itemSearched);

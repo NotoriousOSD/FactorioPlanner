@@ -13,6 +13,8 @@
 
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/main.css">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
   <meta name="theme-color" content="#fafafa">
 </head>
@@ -23,7 +25,28 @@
   <![endif]-->
 
   <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
+  <div class="input-field col s2">
+    <input id="final-product" type="text" class="validate">
+    <label for="final-product">Final Product</label>
+    <input id="final-product" type="text" class="validate">
+    <label for="final-product">Final Product</label>
+    <a id="go-button" class="waves-effect waves-light btn">Go</a>
+  </div>
+
+  <table>
+    <thead>
+    <th>Name</th>
+    <th>Factory Ratio</th>
+    <th></th>
+    </thead>
+    <tbody id="ingredient-table-body">
+
+    </tbody>
+  </table>
+
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="js/vendor/modernizr-{{MODERNIZR_VERSION}}.min.js"></script>
   <script src="https://code.jquery.com/jquery-{{JQUERY_VERSION}}.min.js" integrity="{{JQUERY_SRI_HASH}}" crossorigin="anonymous"></script>
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-{{JQUERY_VERSION}}.min.js"><\/script>')</script>
